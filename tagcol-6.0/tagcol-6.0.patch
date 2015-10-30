@@ -1,0 +1,61 @@
+diff -crB dwm-vanilla/config.def.h dwm-tagcol-6.0/config.def.h
+*** dwm-vanilla/config.def.h	2011-12-19 07:02:46.000000000 -0800
+--- dwm-tagcol-6.0/config.def.h	2015-10-30 15:22:24.828915457 -0700
+***************
+*** 8,13 ****
+--- 8,16 ----
+  static const char selbordercolor[]  = "#005577";
+  static const char selbgcolor[]      = "#005577";
+  static const char selfgcolor[]      = "#eeeeee";
++ static const char occbordercolor[]  = "#222222";
++ static const char occbgcolor[]      = "#444444";
++ static const char occfgcolor[]      = "#bbbbbb";
+  static const unsigned int borderpx  = 1;        /* border pixel of windows */
+  static const unsigned int snap      = 32;       /* snap pixel */
+  static const Bool showbar           = True;     /* False means no bar */
+diff -crB dwm-vanilla/dwm.c dwm-tagcol-6.0/dwm.c
+*** dwm-vanilla/dwm.c	2011-12-19 07:02:46.000000000 -0800
+--- dwm-tagcol-6.0/dwm.c	2015-10-30 15:22:49.095345888 -0700
+***************
+*** 101,106 ****
+--- 101,107 ----
+  	int x, y, w, h;
+  	unsigned long norm[ColLast];
+  	unsigned long sel[ColLast];
++ 	unsigned long occ[ColLast];
+  	Drawable drawable;
+  	GC gc;
+  	struct {
+***************
+*** 730,739 ****
+  	dc.x = 0;
+  	for(i = 0; i < LENGTH(tags); i++) {
+  		dc.w = TEXTW(tags[i]);
+! 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
+  		drawtext(tags[i], col, urg & 1 << i);
+- 		drawsquare(m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
+- 		           occ & 1 << i, urg & 1 << i, col);
+  		dc.x += dc.w;
+  	}
+  	dc.w = blw = TEXTW(m->ltsymbol);
+--- 731,738 ----
+  	dc.x = 0;
+  	for(i = 0; i < LENGTH(tags); i++) {
+  		dc.w = TEXTW(tags[i]);
+! 		col = (m->tagset[m->seltags] & 1 << i) ? dc.sel : (occ &  1 << i ? dc.occ : dc.norm);
+  		drawtext(tags[i], col, urg & 1 << i);
+  		dc.x += dc.w;
+  	}
+  	dc.w = blw = TEXTW(m->ltsymbol);
+***************
+*** 1618,1623 ****
+--- 1617,1625 ----
+  	dc.sel[ColBorder] = getcolor(selbordercolor);
+  	dc.sel[ColBG] = getcolor(selbgcolor);
+  	dc.sel[ColFG] = getcolor(selfgcolor);
++ 	dc.occ[ColBorder] = getcolor(occbordercolor);
++ 	dc.occ[ColBG] = getcolor(occbgcolor);
++ 	dc.occ[ColFG] = getcolor(occfgcolor);
+  	dc.drawable = XCreatePixmap(dpy, root, DisplayWidth(dpy, screen), bh, DefaultDepth(dpy, screen));
+  	dc.gc = XCreateGC(dpy, root, 0, NULL);
+  	XSetLineAttributes(dpy, dc.gc, 1, LineSolid, CapButt, JoinMiter);
